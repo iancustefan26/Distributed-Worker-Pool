@@ -1,0 +1,29 @@
+{
+    "metadata" : {
+        "created_at": "{date}",
+        "created_by": "{user}",
+        "country": "{country}",
+        "category": "{category}",
+        "top": "{top}",
+        "month": "{month}"
+    },
+    "payload": {
+        "domain": "{domain}",
+        "link": "{link}",
+        "request_method": "{method}",
+        "headers": {
+            "User-Agent": "{user_agent}",
+            "Accept": "{accept}",
+            "Accept-Language": "{accept_language}",
+            "Accept-Encoding": "{accept_encoding}",
+            "Connection": "{connection}",
+            "...." : "...."
+        },
+        "body": "{body}",
+        "download_paths": [
+            "downloads/{month}/{country}/{category}/{top}",
+            "downloads/{month}/{country}/{top}",
+            "...."
+        ]
+    }
+}
