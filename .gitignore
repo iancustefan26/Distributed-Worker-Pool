@@ -1,1 +1,32 @@
-poetry.lock
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Poetry
+.poetry/
+
+# Logs
+logs/
+*.log
+
+# Data output
+data/
+downloads/
+
+# Environment variables
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,4 @@
+{
+    "stream_name": "worker_queue",
+    "consumer_groups": ["consumer_group"]
+}

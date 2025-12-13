@@ -1,0 +1,43 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: workerpool-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  master:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.master
+    container_name: workerpool-master
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_NAME: crawl_tasks
+      LOG_LEVEL: INFO
+    command: ["python", "-m", "master.main"]
+    restart: on-failure
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.worker
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_NAME: crawl_tasks
+      WORKER_CONCURRENCY: 1
+      LOG_LEVEL: INFO
+    command: ["python", "-m", "worker.main"]
+    restart: on-failure
+
+volumes:
+  redis-data:
