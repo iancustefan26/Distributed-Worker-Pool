@@ -20,6 +20,8 @@ def download_and_save(job: dict, logger: logging.Logger):
     method = payload.get("request_method", "GET").upper()
     download_paths = payload["download_paths"]
 
+    statistics = payload.get("statistics", {})
+
     if method != "GET":
         raise ValueError(f"Unsupported request method: {method}")
 
@@ -44,6 +46,11 @@ def download_and_save(job: dict, logger: logging.Logger):
 
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(html)
+                
+                statistics_file = os.path.join(path, "statistics.json")
+                with open(statistics_file, "w", encoding="utf-8") as f:
+                    json.dump(statistics, f, indent=4)
+                
 
                 logger.info(f"Saved page → {file_path}")
 
