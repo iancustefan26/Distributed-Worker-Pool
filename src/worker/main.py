@@ -29,7 +29,7 @@ def main():
 
             logger.info(f"Processing {message_id} : {job['payload']['link']}")
 
-            time.sleep(6)
+            time.sleep(1)
             # do work here ...
 
             ack_job(redis_connection, "job_stream", "workers", message_id)

@@ -91,5 +91,21 @@ def enqueue_random_jobs(connection: redis.Redis, stream_name, logger):
         )
 
         logger.info(f"Enqueued random job:{id} → : { job['metadata']['category']} / {job['payload']['request_method']}")
-        time.sleep(5)
+        time.sleep(0.05)
+
+
+def enqueue_job(connection: redis.Redis, stream_name, job, logger):
+    """
+    Enqueue a specific job into a Redis Stream.
+    """
+    # Redis Streams expect flat key-value pairs
+    logger.info(f"Enqueuing job: {job}")
+    id = connection.xadd(
+        name = stream_name,
+        id = '*',
+        fields = {"download_job" : json.dumps(job)}
+    )
+
+    logger.info(f"Enqueued job:{id} → : { job['metadata']} / {job['payload']['domain']}")
+    return id
 

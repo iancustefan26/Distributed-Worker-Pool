@@ -21,7 +21,7 @@ services:
       REDIS_PORT: 6379
       QUEUE_NAME: crawl_tasks
       LOG_LEVEL: INFO
-    command: ["python", "-m", "master.main"]
+    command: ["sh", "-c", "./src/scripts/start_master.sh"]
     restart: on-failure
 
   worker:
@@ -36,7 +36,7 @@ services:
       QUEUE_NAME: crawl_tasks
       WORKER_CONCURRENCY: 1
       LOG_LEVEL: INFO
-    command: ["python", "-m", "worker.main"]
+    command: ["sh", "-c", "./src/scripts/start_worker.sh"]
     restart: on-failure
 
 volumes:

@@ -1,0 +1,17 @@
+{
+    "country_api": {
+        "url": "https://restcountries.com/v3.1/all",
+        "params" : {
+            "fields": "name"
+        }
+    },
+    "semrush_valid_countries" : {
+        "base_url": "https://www.semrush.com/website/top/{country}/all/",
+        "headers" : {
+            "User-Agent": "Mozilla/5.0"
+        },
+        "output_dir": ".",
+        "output_file": "semrush_valid_country_links.txt",
+        "wait_between_requests": 20
+    }
+}

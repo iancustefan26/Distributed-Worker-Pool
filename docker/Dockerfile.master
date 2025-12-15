@@ -1,4 +1,4 @@
-FROM python:3.14-slim
+FROM mcr.microsoft.com/playwright/python:v1.57.0-jammy
 
 # Prevent Python from writing .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,6 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY src/ src/
+
+RUN chmod +x /app/src/scripts/start_master.sh
 
 # Entrypoint
 CMD ["/bin/sh", "scripts/start_master.sh"]
