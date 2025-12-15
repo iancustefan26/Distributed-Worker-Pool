@@ -10,9 +10,14 @@ from master.helper import enqueue_job
 INPUT_FILE = "semrush_valid_country_links.txt"
 OUTPUT_FILE = "semrush_top20_results.json"
 TOP_X = 20
-CFG_PATH = "src/cfg/crawler.json"
-with open(CFG_PATH, "r", encoding="utf-8") as f:
+CRAWL_CFG_PATH = "src/cfg/crawler.json"
+QUEUE_CFG_PATH = "src/cfg/queue.json"
+
+with open(CRAWL_CFG_PATH, "r", encoding="utf-8") as f:
     CONFIG = json.load(f)
+
+with open(QUEUE_CFG_PATH, "r", encoding="utf-8") as f:
+    QUEUE_CONFIG = json.load(f)
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; SemrushCrawler/1.0)"
@@ -82,6 +87,7 @@ def extract_table_data(html):
 
 def crawl_and_enqueue_jobs(connection, stream_name, logger):
     all_jobs = []
+    retry_jobs = []
 
     now = datetime.now()
     month = now.strftime("%Y-%m")
@@ -120,7 +126,7 @@ def crawl_and_enqueue_jobs(connection, stream_name, logger):
                         "headers": HEADERS,
                         "body": None,
                         "download_paths": [
-                            f"downloads/{month}/{country}/top"
+                            f"~/downloads/{month}/{country}/top_{row.get('position')}"
                         ],
                         "country": country,
                         "month": month,
@@ -141,21 +147,55 @@ def crawl_and_enqueue_jobs(connection, stream_name, logger):
                     )
                 except Exception as e:
                     logger.exception(f"Failed to enqueue job for {domain}: {e}")
+                    retry_jobs.append(job)
+
                     continue
 
                 all_jobs.append(job)
 
             logger.info(f"Extracted and enqueued {len(results)} jobs from {url}")
             logger.info("Waiting before next request... (to respect rate limits from robots.txt)")
+
             time.sleep(
                 CONFIG["semrush_valid_countries"]["wait_between_requests"]
             )
 
         except Exception as e:
-            print(f"Failed: {url} — {e}")
+             logger.exception(f"Failed to crawl {url}: {e}")
+             continue
+        
+    logger.info(f"\nCrawling completed. Total jobs created: {len(all_jobs)}")
+    
+    if retry_jobs:
+        logger.warning(f"{len(retry_jobs)} jobs failed to enqueue. Retrying...")
+
+    for _ in range(QUEUE_CONFIG.get("retries_limit", 3)):
+        logger.info(f"Retry attempt {_ + 1}")
+        failed = []
+        for job in retry_jobs:
+            logger.info(f"Retrying enqueue job for {job['payload']['link']}")
+            try:
+                enqueue_job(
+                    connection=connection,
+                    stream_name=stream_name,
+                    job=job,
+                    logger=logger
+                )
+                
+            except Exception as e:
+                logger.exception(f"Retry failed for job {job['payload']['link']}: {e}")
+                failed.append(job)
+                continue
+        
+        if not failed:
+            logger.info("All retry jobs enqueued successfully.")
+            break
+        else:
+            logger.warning(f"{len(failed)} jobs still failed to enqueue after retry.")
+            retry_jobs = failed
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(all_jobs, f, indent=2)
 
-    print(f"\nDone. Created {len(all_jobs)} jobs → {OUTPUT_FILE}")
+    logger.info(f"\nDone. Created {len(all_jobs)} jobs → {OUTPUT_FILE}")
 

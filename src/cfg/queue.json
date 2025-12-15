@@ -2,5 +2,6 @@
     "host": "redis",
     "port": 6379,
     "stream_name": "worker_queue",
-    "consumer_groups": ["consumer_group"]
+    "consumer_groups": ["consumer_group"],
+    "retries_limit": 3
 }

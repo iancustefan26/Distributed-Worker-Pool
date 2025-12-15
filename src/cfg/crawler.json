@@ -13,5 +13,11 @@
         "output_dir": ".",
         "output_file": "semrush_valid_country_links.txt",
         "wait_between_requests": 20
+    },
+    "worker_crawler" : {
+        "max_concurrent_requests": 5,
+        "request_timeout": 15,
+        "max_retries": 2,
+        "retry_backoff_factor": 2
     }
 }

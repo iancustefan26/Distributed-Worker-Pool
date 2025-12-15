@@ -99,7 +99,7 @@ def enqueue_job(connection: redis.Redis, stream_name, job, logger):
     Enqueue a specific job into a Redis Stream.
     """
     # Redis Streams expect flat key-value pairs
-    logger.info(f"Enqueuing job: {job}")
+    #logger.info(f"Enqueuing job: {job}")
     id = connection.xadd(
         name = stream_name,
         id = '*',
