@@ -1,8 +1,10 @@
 # **Distributed Worker Pool**
-*Core focus:  Distributed Systems, Concurrency, Web Crawling*
-*Technologies:  Redis, Python, Docker*
 
 ![Docker Compose](docs/images/thumbnail.png)
+
+*Core focus:  Distributed Systems, Concurrency, Web Crawling*
+
+*Technologies:  Redis, Python, Docker*
 
 
 A distributed web crawling platform using a master-worker architecture. The master enqueues the top sites per country, and workers download pages in parallel using a shared message queue.
@@ -37,7 +39,7 @@ Define architecture and communication through Redis/RabbitMQ.
 
 **Functional Output:**  System correctly connects to the queue and accepts enqueue/dequeue operations.
 
-![Redis Setup](docs/images/redis_setup.png)
+![Redis Setup](docs/images/redis.png)
 
 ### Master Crawler for Semrush Country Pages
 
