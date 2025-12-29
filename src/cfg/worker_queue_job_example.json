@@ -1,29 +1,25 @@
 {
     "metadata" : {
         "created_at": "{date}",
-        "created_by": "{user}",
-        "country": "{country}",
-        "category": "{category}",
-        "top": "{top}",
-        "month": "{month}"
+        "created_by": "{user}"
     },
     "payload": {
         "domain": "{domain}",
         "link": "{link}",
         "request_method": "{method}",
         "headers": {
-            "User-Agent": "{user_agent}",
-            "Accept": "{accept}",
-            "Accept-Language": "{accept_language}",
-            "Accept-Encoding": "{accept_encoding}",
-            "Connection": "{connection}",
-            "...." : "...."
+            "User-Agent": "{user_agent}"
         },
-        "body": "{body}",
+        "body": "{body}", 
         "download_paths": [
-            "downloads/{month}/{country}/{category}/{top}",
-            "downloads/{month}/{country}/{top}",
-            "...."
-        ]
+            "downloads/{month}/{country}/top_{position}"
+        ],
+        "country": "{country}",
+        "month": "{month}",
+        "position": 2,
+        "traffic": 8332022,
+        "pages_per_visit": 16.02,
+        "bounce_rate": "22.71%",
+        "rank_change": null
     }
 }

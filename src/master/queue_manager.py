@@ -1,7 +1,6 @@
 import redis
 from setup import redis_connection, logger
 
-
 def create_consumer(consumer_name):
     try:
         redis_connection.xgroup_createconsumer('tasks', 'worker_group', consumer_name)

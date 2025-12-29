@@ -30,10 +30,10 @@ def main():
 
             job, message_id = result
             payload = job["payload"]
-
+            print(payload)
             logger.info(
                 f"Processing job {message_id} → {payload['domain']} "
-                f"(country={payload['country']}, position={payload['position']})"
+                f"(country={payload['statistics']['country']}, position={payload['statistics']['position']})"
             )
 
             try:

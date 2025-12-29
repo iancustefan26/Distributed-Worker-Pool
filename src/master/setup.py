@@ -17,7 +17,7 @@ def setup_redis_connection():
 def create_consumer_group(redis_connection, group_name, stream_name):
     try:
         # Create a consumer group, also creates the stream if it doenst exist
-        redis_connection.xgroup_create('job_queue', 'worker_group', id='0-0', mkstream=True)
+        redis_connection.xgroup_create(stream_name, group_name, id='0-0', mkstream=True)
         logger.info("Consumer group 'worker_group' created on stream 'job_queue'")
     except redis.exceptions.ResponseError as e:
         logger.warning(f"Creating consumer group 'worker_group' failed : {e}")
@@ -43,7 +43,7 @@ try:
 
     for group in groups:
         create_consumer_group(redis_connection, group, QUEUE_CONFIG.get("stream_name"))
-        
+
     logger.info("Setup completed successfully")
 
 except FileNotFoundError as e:

@@ -20,11 +20,14 @@ def main():
         except Exception as e:
             logger.exception(f"Failed to store semrush country links: {e}")
 
-        crawl_and_enqueue_jobs(
-            connection=redis_connection,
-            stream_name=QUEUE_CONFIG['stream_name'],
-            logger=logger
-        )
+        try:
+            crawl_and_enqueue_jobs(
+                connection=redis_connection,
+                stream_name=QUEUE_CONFIG['stream_name'],
+                logger=logger
+            )
+        except Exception as e:
+            logger.exception(f"Failed to crawl and enqueue jobs: {e}")
         
 
         

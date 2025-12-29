@@ -128,13 +128,15 @@ def crawl_and_enqueue_jobs(connection, stream_name, logger):
                         "download_paths": [
                             f"~/downloads/{month}/{country}/top_{row.get('position')}"
                         ],
-                        "country": country,
-                        "month": month,
-                        "position": row.get("position"),
-                        "traffic": row.get("traffic"),
-                        "pages_per_visit": row.get("pages_per_visit"),
-                        "bounce_rate": row.get("bounce_rate"),
-                        "rank_change": row.get("rank_change")
+                        "statistics": {
+                            "country": country,
+                            "month": month,
+                            "position": row.get("position"),
+                            "traffic": row.get("traffic"),
+                            "pages_per_visit": row.get("pages_per_visit"),
+                            "bounce_rate": row.get("bounce_rate"),
+                            "rank_change": row.get("rank_change")
+                        }
                     }
                 }
 
