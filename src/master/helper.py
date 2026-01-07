@@ -4,15 +4,6 @@ import random
 import time
 from datetime import datetime
 
-def try_ping_redis(connection):
-    try:
-        connection.ping()
-    except redis.exceptions.ConnectionError as e:
-        raise e
-
-# -----------------------------
-# Random data pools
-# -----------------------------
 USERS = ["system", "crawler", "scheduler", "worker-1"]
 COUNTRIES = ["US", "DE", "FR", "IN", "BR"]
 CATEGORIES = ["news", "sports", "tech", "finance"]
@@ -25,10 +16,35 @@ USER_AGENTS = [
     "python-requests/2.31"
 ]
 
-# -----------------------------
-# Helper functions
-# -----------------------------
+
+def try_ping_redis(connection):
+    """
+    Check connectivity to a Redis server.
+
+    This function sends a ping command to the provided Redis connection to verify
+    that the server is reachable. If the connection fails, the underlying Redis
+    connection error is raised.
+
+    :param connection: Active Redis connection instance.
+    :raises redis.exceptions.ConnectionError: If the Redis server is unreachable.
+    """
+    try:
+        connection.ping()
+    except redis.exceptions.ConnectionError as e:
+        raise e
+    
 def random_job():
+    """
+    Generate a randomized job payload for testing or simulation purposes.
+
+    This function constructs a job containing randomized metadata and payload
+    information such as country, category, topic, domain, and HTTP method. The
+    resulting job structure is suitable for enqueuing into a Redis stream and
+    optionally includes request headers and body data for non-GET requests.
+
+    :return: A dictionary representing a randomized job with metadata and payload.
+    """
+
     now = datetime.now()
     month = now.strftime("%Y-%m")
 
@@ -72,13 +88,19 @@ def random_job():
     }
 
 
-# -----------------------------
-# Main enqueue function
-# -----------------------------
 def enqueue_random_jobs(connection: redis.Redis, stream_name, logger):
     """
-    Continuously enqueue random jobs into a Redis Stream every 5 seconds.
+    Continuously enqueue randomly generated jobs into a Redis stream.
+
+    This function runs in an infinite loop, generating random jobs and adding them
+    to the specified Redis stream at a fixed interval. Each enqueued job is logged
+    for traceability and debugging purposes.
+
+    :param connection: Active Redis connection instance.
+    :param stream_name: Name of the Redis stream to enqueue jobs into.
+    :param logger: Logger instance used for logging job generation and enqueueing.
     """
+
     while True:
         job = random_job()
 
@@ -96,10 +118,19 @@ def enqueue_random_jobs(connection: redis.Redis, stream_name, logger):
 
 def enqueue_job(connection: redis.Redis, stream_name, job, logger):
     """
-    Enqueue a specific job into a Redis Stream.
+    Enqueue a single job into a Redis stream.
+
+    This function serializes the provided job and adds it to the specified Redis
+    stream. Upon successful enqueueing, the Redis message ID is logged and
+    returned.
+
+    :param connection: Active Redis connection instance.
+    :param stream_name: Name of the Redis stream to enqueue the job into.
+    :param job: Job dictionary containing metadata and payload information.
+    :param logger: Logger instance used for logging enqueue operations.
+    :return: Redis stream message ID of the enqueued job.
     """
-    # Redis Streams expect flat key-value pairs
-    #logger.info(f"Enqueuing job: {job}")
+
     id = connection.xadd(
         name = stream_name,
         id = '*',

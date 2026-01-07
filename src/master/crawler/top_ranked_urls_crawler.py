@@ -24,17 +24,51 @@ HEADERS = {
 }
 
 def parse_number(value):
+    """
+    Parse an integer value from a formatted string.
+
+    This function removes commas and surrounding whitespace from the input
+    string and converts it to an integer. If the input is empty or None,
+    the function returns None.
+
+    :param value: String representation of a number.
+    :return: Parsed integer value or None if input is empty.
+    """
+
     if not value:
         return None
     return int(value.replace(",", "").strip())
 
 def parse_float(value):
+    """
+    Parse a floating-point number from a string.
+
+    This function attempts to convert the input string into a float.
+    If conversion fails due to invalid formatting or a missing value,
+    None is returned.
+
+    :param value: String representation of a floating-point number.
+    :return: Parsed float value or None if conversion fails.
+    """
+
     try:
         return float(value.strip())
     except:
         return None
 
 def extract_table_data(html):
+    """
+    Extract top-ranked domain statistics from SEMrush HTML content.
+
+    This function parses the provided HTML content using BeautifulSoup,
+    locates the results table, and extracts up to a predefined number of
+    rows containing domain ranking data. Extracted fields include domain
+    name, position, traffic, engagement metrics, and rank changes.
+
+    :param html: Raw HTML content of a SEMrush results page.
+    :return: A list of dictionaries containing extracted ranking data.
+    """
+
     soup = BeautifulSoup(html, "html.parser")
     tbody = soup.find("tbody", {"data-test": "Body"})
 
@@ -86,6 +120,23 @@ def extract_table_data(html):
 
 
 def crawl_and_enqueue_jobs(connection, stream_name, logger):
+    """
+    Crawl SEMrush country pages and enqueue download jobs into Redis.
+
+    This function reads a list of SEMrush country URLs, crawls each page,
+    extracts top-ranked domain data, and generates download jobs enriched
+    with metadata and statistics. Jobs are enqueued into a Redis stream
+    for worker processing, with retry logic applied to failed enqueue
+    operations.
+
+    All successfully created jobs are persisted to a JSON output file
+    for auditing and traceability.
+
+    :param connection: Active Redis connection instance.
+    :param stream_name: Name of the Redis stream to enqueue jobs into.
+    :param logger: Logger instance used for logging crawl and enqueue events.
+    """
+
     all_jobs = []
     retry_jobs = []
 

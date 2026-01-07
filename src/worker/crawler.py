@@ -13,6 +13,26 @@ RETRY_BACKOFF = CONFIG.get("retry_backoff", 5)
 REQUEST_TIMEOUT = CONFIG.get("request_timeout", 30)  
 
 def download_and_save(job: dict, logger: logging.Logger):
+    """
+    Download a web page and save its contents and related statistics to disk.
+
+    This function retrieves a URL specified in the job payload using an HTTP GET
+    request, with configurable headers, timeout, and retry logic. On a successful
+    response, the downloaded HTML content is saved as an index.html file in each
+    configured download path, along with a statistics.json file containing
+    associated metadata.
+
+    The download operation is retried up to a maximum number of attempts using
+    an exponential backoff strategy. If all attempts fail, the last encountered
+    exception is raised.
+
+    :param job: Dictionary containing the job payload with request details,
+                download paths, and statistics.
+    :param logger: Logger instance used for logging progress, warnings, and errors.
+    :raises ValueError: If an unsupported HTTP request method is provided.
+    :raises Exception: Re-raises the last exception if all retries fail.
+    """
+
     payload = job["payload"]
 
     url = payload["link"]

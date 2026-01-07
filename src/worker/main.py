@@ -4,12 +4,25 @@ from helpers.helper import try_ping_redis, get_hostname
 from worker.crawler import download_and_save
 from helpers.helper import dequeue_job_group, ack_job
 import time
-import requests
 from requests.exceptions import HTTPError
 
 logger = setup_logging("Worker.main")
 
 def main():
+    """
+    Main worker loop that continuously processes jobs from a Redis stream.
+
+    The worker initializes logging, verifies Redis connectivity, and then enters
+    an infinite loop where it dequeues job groups from a configured Redis stream
+    consumer group. For each received job, it logs metadata, executes the
+    download-and-save operation, and acknowledges successful jobs back to Redis.
+
+    Jobs that fail due to HTTP-related errors are logged and left unacknowledged
+    to allow retries, while unexpected exceptions are treated as permanent
+    failures and logged accordingly. If the worker encounters a fatal error
+    outside the processing loop, it logs the crash details before exiting.
+    """
+
     logger.info("Starting Worker Node")
 
     try:

@@ -5,6 +5,17 @@ import logging.config
 
 # Functions
 def setup_redis_connection():
+    """
+    Establish and return a connection to the Redis server.
+
+    This function initializes a Redis client using host and port information
+    from the queue configuration. It logs a success message upon a successful
+    connection and raises an exception if the connection attempt fails.
+
+    :return: An active Redis connection instance.
+    :raises redis.exceptions.ConnectionError: If the Redis server is unreachable.
+    """
+
     try:
         redis_connection = redis.Redis(host=QUEUE_CONFIG['host'], port=QUEUE_CONFIG['port'], decode_responses=True)
         logger.info("Connected to Redis")
@@ -15,6 +26,18 @@ def setup_redis_connection():
     return redis_connection
 
 def create_consumer_group(redis_connection, group_name, stream_name):
+    """
+    Create a Redis consumer group for a given stream.
+
+    This function attempts to create a consumer group on the specified Redis
+    stream. If the stream does not already exist, it is created automatically.
+    If the consumer group already exists, a warning is logged instead of failing.
+
+    :param redis_connection: Active Redis connection instance.
+    :param group_name: Name of the consumer group to create.
+    :param stream_name: Name of the Redis stream associated with the group.
+    """
+
     try:
         # Create a consumer group, also creates the stream if it doenst exist
         redis_connection.xgroup_create(stream_name, group_name, id='0-0', mkstream=True)
@@ -28,6 +51,15 @@ def setup_logging(name):
 
 
 # Setup phase
+"""
+Configure and return a named logger using predefined logging settings.
+
+This function loads the logging configuration dictionary and returns a logger
+instance identified by the provided name.
+
+:param name: Name of the logger to retrieve.
+:return: Configured logger instance.
+"""
 
 try:
     LOGGING_CONFIG = json.load(open('src/cfg/logging.json'))

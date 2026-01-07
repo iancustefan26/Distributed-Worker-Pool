@@ -8,6 +8,20 @@ from master.crawler.top_ranked_urls_crawler import crawl_and_enqueue_jobs
 logger = setup_logging("MASTER.main")
 
 def main():
+    """
+    Entry point for the master node orchestration process.
+
+    This function initializes the master workflow by verifying Redis connectivity
+    and coordinating crawler operations. It first attempts to retrieve and store
+    Semrush country links, logging the output location or any failures encountered.
+    It then crawls top-ranked URLs and enqueues generated jobs into the configured
+    Redis stream for worker consumption.
+
+    All major steps are wrapped in exception handling to ensure that failures are
+    logged clearly without causing silent crashes. If Redis is unreachable, the
+    master node logs the error and terminates gracefully.
+    """
+
     logger.info("Starting Master Node")
     try:
         helper.try_ping_redis(redis_connection)

@@ -5,6 +5,17 @@ import os
 CFG_PATH = "src/cfg/crawler.json"
 
 def get_semrush_countries():
+    """
+    Retrieve the list of available SEMrush countries using browser automation.
+
+    This function launches a headless Chromium browser via Playwright, navigates
+    to the SEMrush top websites page, opens the country selection dropdown, and
+    extracts all available country options. Each country is returned as a
+    dictionary containing its display name and associated value.
+
+    :return: A list of dictionaries with country names and values.
+    """
+
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=True
@@ -43,14 +54,18 @@ def get_semrush_countries():
         browser.close()
         return countries
 
-
-import os
-
 def store_semrush_country_links():
     """
-    countries: list of dicts -> [{"name": "...", "value": "..."}]
-    config: semrush_valid_countries config from crawler.json
+    Generate and store SEMrush country-specific URLs based on available countries.
+
+    This function fetches the list of SEMrush-supported countries, loads the
+    SEMrush configuration from the crawler configuration file, and constructs
+    country-specific URLs using the configured base URL. All generated URLs are
+    written to an output file, which is created if it does not already exist.
+
+    :return: The filesystem path to the file containing the stored country URLs.
     """
+
     countries = get_semrush_countries()
     
     with open(CFG_PATH, "r") as f:
