@@ -177,7 +177,7 @@ def crawl_and_enqueue_jobs(connection, stream_name, logger):
                         "headers": HEADERS,
                         "body": None,
                         "download_paths": [
-                            f"~/downloads/{month}/{country}/top_{row.get('position')}"
+                            f"~/downloads/{month}/{country}/top_{row.get('position')}_{domain}"
                         ],
                         "statistics": {
                             "country": country,
